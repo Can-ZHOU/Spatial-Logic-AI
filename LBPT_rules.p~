@@ -1,0 +1,120 @@
+/* --- Copyright University of Nottingham 2011. All rights reserved. ------
+ > File:            ontology_rules.p
+ > Purpose:	    Rules for a simple LBP reasoner.
+ > Author:          Hai Nguyen & Brian Logan, July 12 2014
+ > Documentation:   
+ > Related Files:   LBPT_rules.p
+ */
+
+
+vars lbpt_ruleset;
+
+define :ruleset lbpt_ruleset;
+;;;    [DLOCAL [prb_show_conditions = true]];
+    [VARS prb_allrules trigger_db];
+
+    ;;; INFERENCE RULES
+    ;;; LBPT 5.1
+
+   RULE axiom_2
+  	[?A NEAR ?B]  [->>a1]
+	[WHERE some_in_db_p([ ^a1 ],trigger_db)]
+	[LVARS	
+		[consequent=add_new_formula( [^B NEAR ^A ])]
+		]
+	==>
+	[SAYIF lbpt 'Justifying datum' ?consequent ?a1 ]
+	[ATMS_JUSTIFY ?consequent [?a1 ]]
+	
+   RULE axiom_3
+  	[?A FAR ?B]  [->>a1]
+	[WHERE some_in_db_p([ ^a1 ],trigger_db)]
+	[LVARS	
+		[consequent=add_new_formula( [^B FAR ^A ])]
+		]
+	==>
+	[SAYIF lbpt 'Justifying datum' ?consequent ?a1 ]
+	[ATMS_JUSTIFY ?consequent [?a1 ]]
+
+   RULE axiom_4
+        [?A BPT ?B]  [->>a1]
+	[?B BPT ?C] [->>a2]
+	[WHERE some_in_db_p([ ^a1 ^a2 ],trigger_db)]
+	[LVARS	
+		[consequent=add_new_formula( [^C NEAR ^A ])]
+		]
+	==>
+	[SAYIF lbpt 'Justifying datum' ?consequent ?a1 ?a2 ]
+	[ATMS_JUSTIFY ?consequent [?a1 ?a2 ]]
+
+   RULE axiom_5
+        [?B BPT ?A]  [->>a1]
+	[?B BPT ?C] [->>a2]
+	[WHERE some_in_db_p([ ^a1 ^a2 ],trigger_db)]
+	[LVARS	
+		[consequent=add_new_formula( [^C NEAR ^A ])]
+		]
+	==>
+	[SAYIF lbpt 'Justifying datum' ?consequent ?a1 ?a2 ]
+	[ATMS_JUSTIFY ?consequent [?a1 ?a2 ]]
+
+   RULE axiom_6
+        [?B BPT ?A]  [->>a1]
+	[?B NEAR ?C] [->>a2]
+	[?C BPT ?D] [->>a3]
+	[?D FAR ?A] [->>a4]
+	[WHERE some_in_db_p([ ^a1 ^a2 ^a3 ^a4],trigger_db)]
+	[LVARS [cdata = maplist([ ^a1 ^a2 ^a3 ^a4], cannonicalise_datum)]]
+	==>
+	[SAYIF lbpt 'Inconsistent data' ?a1 ?a2 ?a3 ?a4]
+;;;	[ATMS_INCONSISTENT ?a1 ?a2 ?a3 ?a4]
+	[ATMS_INCONSISTENT ??cdata]
+	
+   RULE axiom_7
+        [?A NEAR ?B]  [->>a1]
+	[?B BPT ?C] [->>a2]
+	[?C BPT ?D] [->>a3]
+	[?D FAR ?A] [->>a4]
+	[WHERE some_in_db_p([ ^a1 ^a2 ^a3 ^a4 ],trigger_db)]
+	[LVARS [cdata = maplist([ ^a1 ^a2 ^a3 ^a4 ], cannonicalise_datum)]]
+	==>
+	[SAYIF lbpt 'Inconsistent data' ?a1 ?a2 ?a3 ?a4]
+;;;	[ATMS_INCONSISTENT ?a1 ?a2 ?a3 ?a4]
+	[ATMS_INCONSISTENT ??cdata]
+
+   RULE definition_beq1
+	[?A BPT ?B]  [->>a1]
+	[?B BPT ?A] [->>a2]
+	[WHERE some_in_db_p([ ^a1 ^a2 ],trigger_db)]
+	[LVARS	
+		[consequent=add_new_formula( [^A BEQ ^B ])]
+		]
+	==>
+	[SAYIF lbpt 'Justifying datum' ?consequent ?a1 ?a2 ]
+	[ATMS_JUSTIFY ?consequent [?a1 ?a2 ]]
+	
+    RULE definition_beq2
+	[?A BEQ ?B]  [->>a]
+	[WHERE some_in_db_p([ ^a ],trigger_db)]
+	[LVARS	
+		[consequent1 = add_new_formula([^A BPT ^B ])]
+		[consequent2 = add_new_formula([^B BPT ^A ])]
+		]
+	==>
+	[SAYIF lbpt_beq2 'Justifying datum' ?consequent1 ?consequent2 ?a ]
+	[ATMS_AND_JUSTIFY [ ?consequent1 ?consequent2 ]  ?a ]
+
+   RULE near_far
+        [?A NEAR ?B]  [->>a1]
+	[?A FAR ?B] [->>a2]
+	[WHERE some_in_db_p([ ^a1 ^a2 ], trigger_db)]
+	[LVARS [cdata = maplist([ ^a1 ^a2 ], cannonicalise_datum)]]
+	==>
+	[SAYIF lbpt 'Inconsistent data' ?a1 ?a2]
+;;;	[ATMS_INCONSISTENT ?a1 ?a2]
+	[ATMS_INCONSISTENT ??cdata]
+
+enddefine;
+
+;;; LBPT_rules ends here
+vars LBPT_rules = true;

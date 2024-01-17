@@ -1,0 +1,12 @@
+uses lisp_utils
+
+define read_relations(filename) -> relations;
+    lvars ir = incharitem(discin(filename));
+    1 -> item_chartype(`/`, ir);
+    1 -> item_chartype(`:`, ir);
+    1 -> item_chartype(`.`, ir);
+
+    lvars os_url = consword('http://www.ordnancesurvey.co.uk/ontology/BuildingsAndPlaces/v1.1/BuildingsAndPlaces.owl');
+    lvars sm_url = consword('http://www.semanticweb.org/ontologies/2012/2/OpenStreetMapFeatures.owl');
+    remove_if(nonop =(% sm_url %), [% repeat 9 times ir(); endrepeat %]) -> relations;
+    enddefine;

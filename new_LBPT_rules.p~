@@ -1,0 +1,300 @@
+/* --- Copyright University of Nottingham 2011. All rights reserved. ------
+ > File:            ontology_rules.p
+ > Purpose:	    Rules for a simple LBP reasoner.
+ > Author:          Hai Nguyen & Brian Logan, July 12 2014
+ > Documentation:   
+ > Related Files:   LBPT_rules.p
+ */
+
+
+vars lbpt_ruleset;
+
+;;; The following rules assume that the arguments to all NEAR and FAR
+;;; relations are in alphabefore order.
+define :ruleset lbpt_ruleset;
+;;;    [DLOCAL [prb_show_conditions = true]];
+    [VARS prb_allrules trigger_db];
+
+    RULE axiom_4
+        [BPT ?A ?B] [->> a1]
+	[BPT ?B ?C] [->> a2]
+	[WHERE some_in_db_p([^a1 ^a2], trigger_db) and alphabefore(A, C)]
+	[LVARS [consequent = add_new_formula([NEAR ^A ^C])]]
+    ==>
+	[SAYIF lbpt '4 Justifying datum' ?consequent ?a1 ?a2]
+	[ATMS_JUSTIFY ?consequent [?a1 ?a2]]
+
+    RULE axiom_4_1
+        [BPT ?A ?B] [->> a1]
+	[BPT ?B ?C] [->> a2]
+	[WHERE some_in_db_p([^a1 ^a2], trigger_db) and alphabefore(C, A)]
+	[LVARS [consequent = add_new_formula([NEAR ^C ^A])]]
+    ==>
+	[SAYIF lbpt '4_1 Justifying datum' ?consequent ?a1 ?a2]
+	[ATMS_JUSTIFY ?consequent [?a1 ?a2]]
+
+    RULE axiom_4b
+        [BPT ?A ?B] [->> a1]
+	[WHERE some_in_db_p([^a1], trigger_db) and alphabefore(A, B)]
+	[LVARS [consequent = add_new_formula([NEAR ^A ^B])]]
+    ==>
+	[SAYIF lbpt '4b Justifying datum' ?consequent ?a1]
+	[ATMS_JUSTIFY ?consequent [?a1]]
+
+    RULE axiom_4b_1
+        [BPT ?A ?B] [->> a1]
+	[WHERE some_in_db_p([^a1], trigger_db) and alphabefore(B, A)]
+	[LVARS [consequent = add_new_formula([NEAR ^B ^A])]]
+    ==>
+	[SAYIF lbpt '4b_1 Justifying datum' ?consequent ?a1]
+	[ATMS_JUSTIFY ?consequent [?a1]]
+
+    RULE axiom_5
+        [BPT ?B ?A] [->> a1]
+	[BPT ?B ?C] [->> a2]
+	[WHERE some_in_db_p([^a1 ^a2], trigger_db) and alphabefore(A, C)]
+	[LVARS [consequent = add_new_formula([NEAR ^A ^C])]]
+    ==>
+	[SAYIF lbpt '5 Justifying datum' ?consequent ?a1 ?a2]
+	[ATMS_JUSTIFY ?consequent [?a1 ?a2]]
+
+    RULE axiom_5_1
+        [BPT ?B ?A] [->> a1]
+	[BPT ?B ?C] [->> a2]
+	[WHERE some_in_db_p([^a1 ^a2], trigger_db) and alphabefore(C, A)]
+	[LVARS [consequent = add_new_formula([NEAR ^C ^A])]]
+    ==>
+	[SAYIF lbpt '5_1 Justifying datum' ?consequent ?a1 ?a2]
+	[ATMS_JUSTIFY ?consequent [?a1 ?a2]]
+
+    RULE axiom_6
+        [BPT ?B ?A] [->> a1]
+	[NEAR ?B ?C] [->> a2]
+	[BPT ?C ?D] [->> a3]
+	[FAR ?A ?D] [->> a4]
+	[WHERE some_in_db_p([^a1 ^a2 ^a3 ^a4], trigger_db)]
+    ==>
+	[SAYIF lbpt '6 Inconsistent data' ?a1 ?a2 ?a3 ?a4]
+	[ATMS_INCONSISTENT ?a1 ?a2 ?a3 ?a4]
+
+    RULE axiom_6_1
+        [BPT ?B ?A] [->> a1]
+	[NEAR ?C ?B] [->> a2]
+	[BPT ?C ?D] [->> a3]
+	[FAR ?A ?D] [->> a4]
+	[WHERE some_in_db_p([^a1 ^a2 ^a3 ^a4], trigger_db)]
+    ==>
+	[SAYIF lbpt '6_1 Inconsistent data' ?a1 ?a2 ?a3 ?a4]
+	[ATMS_INCONSISTENT ?a1 ?a2 ?a3 ?a4]
+
+    RULE axiom_6_2
+        [BPT ?B ?A] [->> a1]
+	[NEAR ?B ?C] [->> a2]
+	[BPT ?C ?D] [->> a3]
+	[FAR ?D ?A] [->> a4]
+	[WHERE some_in_db_p([^a1 ^a2 ^a3 ^a4], trigger_db)]
+    ==>
+	[SAYIF lbpt '6_2 Inconsistent data' ?a1 ?a2 ?a3 ?a4]
+	[ATMS_INCONSISTENT ?a1 ?a2 ?a3 ?a4]
+
+    RULE axiom_6_3
+        [BPT ?B ?A] [->> a1]
+	[NEAR ?C ?B] [->> a2]
+	[BPT ?C ?D] [->> a3]
+	[FAR ?D ?A] [->> a4]
+	[WHERE some_in_db_p([^a1 ^a2 ^a3 ^a4], trigger_db)]
+    ==>
+	[SAYIF lbpt '6_3 Inconsistent data' ?a1 ?a2 ?a3 ?a4]
+	[ATMS_INCONSISTENT ?a1 ?a2 ?a3 ?a4]
+
+    RULE axiom_6a
+	[NEAR ?A ?B] [->> a1]
+	[BPT ?B ?C] [->> a2]
+	[FAR ?A ?C] [->> a3]
+	[WHERE some_in_db_p([^a1 ^a2 ^a3], trigger_db)]
+    ==>
+	[SAYIF lbpt '6a Inconsistent data' ?a1 ?a2 ?a3]
+	[ATMS_INCONSISTENT ?a1 ?a2 ?a3]
+
+    RULE axiom_6a_1
+	[NEAR ?B ?A] [->> a1]
+	[BPT ?B ?C] [->> a2]
+	[FAR ?A ?C] [->> a3]
+	[WHERE some_in_db_p([^a1 ^a2 ^a3], trigger_db)]
+    ==>
+	[SAYIF lbpt '6a_1 Inconsistent data' ?a1 ?a2 ?a3]
+	[ATMS_INCONSISTENT ?a1 ?a2 ?a3]
+
+    RULE axiom_6a_2
+	[NEAR ?A ?B] [->> a1]
+	[BPT ?B ?C] [->> a2]
+	[FAR ?C ?A] [->> a3]
+	[WHERE some_in_db_p([^a1 ^a2 ^a3], trigger_db)]
+    ==>
+	[SAYIF lbpt '6a_2 Inconsistent data' ?a1 ?a2 ?a3]
+	[ATMS_INCONSISTENT ?a1 ?a2 ?a3]
+
+    RULE axiom_6a_3
+	[NEAR ?B ?A] [->> a1]
+	[BPT ?B ?C] [->> a2]
+	[FAR ?C ?A] [->> a3]
+	[WHERE some_in_db_p([^a1 ^a2 ^a3], trigger_db)]
+    ==>
+	[SAYIF lbpt '6a_3 Inconsistent data' ?a1 ?a2 ?a3]
+	[ATMS_INCONSISTENT ?a1 ?a2 ?a3]
+
+    RULE axiom_61
+	[BPT ?A ?B] [->> a1]
+	[BPT ?A ?C] [->> a2]
+	[FAR ?B ?C] [->> a3]
+	[WHERE some_in_db_p([^a1 ^a2 ^a3], trigger_db)]
+    ==>
+	[SAYIF lbpt '61 Inconsistent data' ?a1 ?a2 ?a3]
+	[ATMS_INCONSISTENT ?a1 ?a2 ?a3]
+
+    RULE axiom_61_1
+	[BPT ?A ?B] [->> a1]
+	[BPT ?A ?C] [->> a2]
+	[FAR ?C ?B] [->> a3]
+	[WHERE some_in_db_p([^a1 ^a2 ^a3], trigger_db)]
+    ==>
+	[SAYIF lbpt '61_1 Inconsistent data' ?a1 ?a2 ?a3]
+	[ATMS_INCONSISTENT ?a1 ?a2 ?a3]
+
+    RULE axiom_6a1
+	[BPT ?A ?B] [->> a1]
+	[FAR ?A ?B] [->> a2]
+	[WHERE some_in_db_p([^a1 ^a2], trigger_db)]
+    ==>
+	[SAYIF lbpt '6a1 Inconsistent data' ?a1 ?a2]
+	[ATMS_INCONSISTENT ?a1 ?a2]
+
+    RULE axiom_6a1_1
+	[BPT ?A ?B] [->> a1]
+	[FAR ?B ?A] [->> a2]
+	[WHERE some_in_db_p([^a1 ^a2], trigger_db)]
+    ==>
+	[SAYIF lbpt '6a1_1 Inconsistent data' ?a1 ?a2]
+	[ATMS_INCONSISTENT ?a1 ?a2]
+
+    RULE axiom_6b
+	[NEAR ?A ?B] [->> a1]
+	[BPT ?A ?C] [->> a2]
+	[FAR ?B ?C] [->> a3]
+	[WHERE some_in_db_p([^a1 ^a2 ^a3], trigger_db)]
+    ==>
+	[SAYIF lbpt '6b Inconsistent data' ?a1 ?a2 ?a3]
+	[ATMS_INCONSISTENT ?a1 ?a2 ?a3]
+
+    RULE axiom_6b_1
+	[NEAR ?B ?A] [->> a1]
+	[BPT ?A ?C] [->> a2]
+	[FAR ?B ?C] [->> a3]
+	[WHERE some_in_db_p([^a1 ^a2 ^a3], trigger_db)]
+    ==>
+	[SAYIF lbpt '6b_1 Inconsistent data' ?a1 ?a2 ?a3]
+	[ATMS_INCONSISTENT ?a1 ?a2 ?a3]
+
+    RULE axiom_6b_2
+	[NEAR ?A ?B] [->> a1]
+	[BPT ?A ?C] [->> a2]
+	[FAR ?C ?B] [->> a3]
+	[WHERE some_in_db_p([^a1 ^a2 ^a3], trigger_db)]
+    ==>
+	[SAYIF lbpt '6b_2 Inconsistent data' ?a1 ?a2 ?a3]
+	[ATMS_INCONSISTENT ?a1 ?a2 ?a3]
+
+    RULE axiom_6b_3
+	[NEAR ?B ?A] [->> a1]
+	[BPT ?A ?C] [->> a2]
+	[FAR ?C ?B] [->> a3]
+	[WHERE some_in_db_p([^a1 ^a2 ^a3], trigger_db)]
+    ==>
+	[SAYIF lbpt '6b_3 Inconsistent data' ?a1 ?a2 ?a3]
+	[ATMS_INCONSISTENT ?a1 ?a2 ?a3]
+
+    RULE axiom_6c
+	[NEAR ?A ?B] [->> a1]
+	[FAR ?A ?B] [->> a2]
+	[WHERE some_in_db_p([^a1 ^a2], trigger_db)]
+    ==>
+	[SAYIF lbpt '6c Inconsistent data' ?a1 ?a2]
+	[ATMS_INCONSISTENT ?a1 ?a2]
+
+    RULE axiom_6c_1
+	[BPT ?B ?A] [->> a1]
+	[FAR ?B ?A] [->> a2]
+	[WHERE some_in_db_p([^a1 ^a2], trigger_db)]
+    ==>
+	[SAYIF lbpt '6c_1 Inconsistent data' ?a1 ?a2]
+	[ATMS_INCONSISTENT ?a1 ?a2]
+
+    RULE axiom_6c1
+	[FAR ?A ?A] [->> a1]
+	[WHERE some_in_db_p([^a1], trigger_db)]
+    ==>
+	[SAYIF lbpt '6c1 Inconsistent data' ?a1]
+	[ATMS_INCONSISTENT ?a1]
+
+    RULE axiom_7
+        [NEAR ?A ?B] [->> a1]
+	[BPT ?B ?C] [->> a2]
+	[BPT ?C ?D] [->> a3]
+	[FAR ?D ?A] [->> a4]
+	[WHERE some_in_db_p([^a1 ^a2 ^a3 ^a4], trigger_db)]
+    ==>
+	[SAYIF lbpt '7 Inconsistent data' ?a1 ?a2 ?a3 ?a4]
+	[ATMS_INCONSISTENT ?a1 ?a2 ?a3 ?a4]
+
+    RULE axiom_7_1
+        [NEAR ?B ?A] [->> a1]
+	[BPT ?B ?C] [->> a2]
+	[BPT ?C ?D] [->> a3]
+	[FAR ?D ?A] [->> a4]
+	[WHERE some_in_db_p([^a1 ^a2 ^a3 ^a4], trigger_db)]
+    ==>
+	[SAYIF lbpt '7_1 Inconsistent data' ?a1 ?a2 ?a3 ?a4]
+	[ATMS_INCONSISTENT ?a1 ?a2 ?a3 ?a4]
+
+    RULE axiom_7_2
+        [NEAR ?A ?B] [->> a1]
+	[BPT ?B ?C] [->> a2]
+	[BPT ?C ?D] [->> a3]
+	[FAR ?A ?D] [->> a4]
+	[WHERE some_in_db_p([^a1 ^a2 ^a3 ^a4], trigger_db)]
+    ==>
+	[SAYIF lbpt '7_2 Inconsistent data' ?a1 ?a2 ?a3 ?a4]
+	[ATMS_INCONSISTENT ?a1 ?a2 ?a3 ?a4]
+
+    RULE axiom_7_3
+        [NEAR ?B ?A] [->> a1]
+	[BPT ?B ?C] [->> a2]
+	[BPT ?C ?D] [->> a3]
+	[FAR ?A ?D] [->> a4]
+	[WHERE some_in_db_p([^a1 ^a2 ^a3 ^a4], trigger_db)]
+    ==>
+	[SAYIF lbpt '7_3 Inconsistent data' ?a1 ?a2 ?a3 ?a4]
+	[ATMS_INCONSISTENT ?a1 ?a2 ?a3 ?a4]
+
+    RULE axiom_71
+	[BPT ?A ?B] [->> a1]
+	[BPT ?B ?C] [->> a2]
+	[FAR ?A ?C] [->> a3]
+	[WHERE some_in_db_p([^a1 ^a2 ^a3], trigger_db)]
+    ==>
+	[SAYIF lbpt '71 Inconsistent data' ?a1 ?a2 ?a3]
+	[ATMS_INCONSISTENT ?a1 ?a2 ?a3]
+
+    RULE axiom_71_1
+	[BPT ?A ?B] [->> a1]
+	[BPT ?B ?C] [->> a2]
+	[FAR ?C ?A] [->> a3]
+	[WHERE some_in_db_p([^a1 ^a2 ^a3], trigger_db)]
+    ==>
+	[SAYIF lbpt '71_1 Inconsistent data' ?a1 ?a2 ?a3]
+	[ATMS_INCONSISTENT ?a1 ?a2 ?a3]
+
+enddefine;
+
+;;; LBPT_rules ends here
+vars LBPT_rules = true;

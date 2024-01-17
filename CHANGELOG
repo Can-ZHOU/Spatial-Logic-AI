@@ -1,0 +1,16 @@
+
+atms_nodes.p
+
+added procedures create_atms_premise, pprint_atms_justification
+
+modified udate_atms_det_justification to filter out premises when computing
+label updates (there is also an alternative (broken?) version
+update_atms_det_justification2)
+
+
+popatms.p
+
+added procedure atms_premise
+
+modified atms_assume_all to take an ispremise flag
+
