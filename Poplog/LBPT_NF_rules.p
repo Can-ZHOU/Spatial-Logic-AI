@@ -14,7 +14,7 @@ define :ruleset lbpt_ruleset;
     [VARS prb_allrules trigger_db];
 
 	RULE Axiom_1
-	[NEAR ?A ?A] [->> a1]
+	[FAR ?A ?A] [->> a1]
 	[WHERE some_in_db_p([^a1], trigger_db)]
     ==>
 	[SAYIF lbpt 'Axiom_1 Inconsistent data' ?a1]
