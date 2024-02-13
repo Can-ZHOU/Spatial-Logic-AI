@@ -92,7 +92,7 @@ true -> prb_repeating;
 ;;; Extend popuseslist
 [ '.' ^^popuseslist] -> popuseslist;
 uses prb_atms
-uses new_LBPT_rules
+uses LBPT_NF_rules
 
 
 ;;; The reasoner should not claim the same justification twice, but this
