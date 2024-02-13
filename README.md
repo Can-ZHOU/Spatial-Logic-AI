@@ -1,4 +1,4 @@
-### Code for Paper: (Submitted to Journal of Artificial Intelligence Research) 
+### Code for Paper:
 ## On the Finite Axiomatisability of Qualitative Distance Logicsover 2D Euclidean Space
 
 ### Set Up && Environment
